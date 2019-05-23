@@ -1,7 +1,7 @@
 ##..............................................................................
 ##               Project: Fisher-Boschloo test
 ##               Purpose: Provide functions around Fisher-Boschloo test for the
-##                        comparison of two two groups with binary endpoint.
+##                        comparison of two groups with binary endpoint.
 ##                 Input: none
 ##                Output: Functions:
 ##                        Add.cond.p: Compute conditional p-values for every result
