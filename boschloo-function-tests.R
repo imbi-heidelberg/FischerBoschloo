@@ -17,7 +17,7 @@
 # noninferiority, S. Wellek, 2010
 
 ## Import functions ############################################################
-source("boschloo-functions-publ.R")
+source("boschloo-functions.R")
 
 ## Testing function results ####################################################
 # Superiority
