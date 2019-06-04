@@ -91,7 +91,7 @@ Raise.level <- function(alpha, n0, n1, acc = 4){
   # value = alpha
   ordered.p.values %>%
     group_by(s) %>%
-    summarise(c = max(p.value[p.value <= alpha])) %>%
+    summarise(c = suppressWarnings(max(p.value[p.value <= alpha]))) %>%
     arrange(s) %>%
     pull(c) ->
     start.bounds
@@ -121,15 +121,26 @@ Raise.level <- function(alpha, n0, n1, acc = 4){
         size
     }
   }
+  # Exit function if size of smallest possible rejection region is too high
+  if (i <= 1) {
+    warning("The rejection region of the test is empty.")
+    return(c(nom.alpha.mid = 0, size = 0))
+  }
   
   # If two or more possible results have the same p-values, they have to fall
   # in the same region. The rejection region is shrinked until this condition
   # is fulfilled.
-  while(p.values[i-1] == p.values[i]){
-    bounds[s.vec[i]+1] <- p.values[1:(i-1)][s.vec[1:(i-1)] == s.vec[i]] %>% tail(1) %>% max()
+  while(p.values[i-1] == p.values[i] & i > 1){
+    bounds[s.vec[i]+1] <- suppressWarnings(p.values[1:(i-1)][s.vec[1:(i-1)] == s.vec[i]] %>% tail(1) %>% max())
     i <- i-1
   }
-  bounds[s.vec[i]+1] <- p.values[1:(i-1)][s.vec[1:(i-1)] == s.vec[i]] %>% tail(1) %>% max()
+  # Exit function if size of smallest possible rejection region is too high
+  if (i <= 1) {
+    warning("The rejection region of the test is empty.")
+    return(c(nom.alpha.mid = 0, size = 0))
+  }
+  
+  bounds[s.vec[i]+1] <- suppressWarnings(p.values[1:(i-1)][s.vec[1:(i-1)] == s.vec[i]] %>% tail(1) %>% max())
   i <- i-1
   # Create grid for p with 51 points to compute more accurate maximum of size.
   p <- seq(0, 1, by = 0.02)
@@ -143,10 +154,15 @@ Raise.level <- function(alpha, n0, n1, acc = 4){
   # If maximum size is too high, shrink rejection region and compute new maximum
   # size
   while (max.size > alpha) {
-    bounds[s.vec[i]+1] <- p.values[1:(i-1)][s.vec[1:(i-1)] == s.vec[i]] %>% tail(1) %>% max()
+    # Exit function if size of smallest possible rejection region is too high
+    if (i <= 1) {
+      warning("The rejection region of the test is empty.")
+      return(c(nom.alpha.mid = 0, size = 0))
+    }
+    bounds[s.vec[i]+1] <- suppressWarnings(p.values[1:(i-1)][s.vec[1:(i-1)] == s.vec[i]] %>% tail(1) %>% max())
     i <- i-1
-    while(p.values[i-1] == p.values[i]){
-      bounds[s.vec[i]+1] <- p.values[1:(i-1)][s.vec[1:(i-1)] == s.vec[i]] %>% tail(1) %>% max()
+    while(p.values[i-1] == p.values[i] & i > 1){
+      bounds[s.vec[i]+1] <- suppressWarnings(p.values[1:(i-1)][s.vec[1:(i-1)] == s.vec[i]] %>% tail(1) %>% max())
       i <- i-1
     }
     sapply(
@@ -168,10 +184,15 @@ Raise.level <- function(alpha, n0, n1, acc = 4){
     max.size
   # If maximum size is too high, shrink rejection region
   while (max.size > alpha) {
-    bounds[s.vec[i]+1] <- p.values[1:(i-1)][s.vec[1:(i-1)] == s.vec[i]] %>% tail(1) %>% max()
+    # Exit function if size of smallest possible rejection region is too high
+    if (i <= 1) {
+      warning("The rejection region of the test is empty.")
+      return(c(nom.alpha.mid = 0, size = 0))
+    }
+    bounds[s.vec[i]+1] <- suppressWarnings(p.values[1:(i-1)][s.vec[1:(i-1)] == s.vec[i]] %>% tail(1) %>% max())
     i <- i-1
-    while(p.values[i-1] == p.values[i]){
-      bounds[s.vec[i]+1] <- p.values[1:(i-1)][s.vec[1:(i-1)] == s.vec[i]] %>% tail(1) %>% max()
+    while(p.values[i-1] == p.values[i] & i > 1){
+      bounds[s.vec[i]+1] <- suppressWarnings(p.values[1:(i-1)][s.vec[1:(i-1)] == s.vec[i]] %>% tail(1) %>% max())
       i <- i-1
     }
     sapply(
